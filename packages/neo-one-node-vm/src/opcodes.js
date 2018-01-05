@@ -1641,7 +1641,7 @@ const OPCODE_PAIRS = [
             const index = args[0].asBigInteger().toNumber();
             const value = args[1].asArray();
             if (index < 0 || index >= value.length) {
-              throw new InvalidRemoveIndexError(context);
+              throw new InvalidRemoveIndexError(context, index);
             }
             value.splice(index, 1);
 

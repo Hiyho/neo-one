@@ -57,11 +57,15 @@ export default class ArrayLikeStackItem extends StackItemBase {
 
   toContractParameter(): ContractParameter {
     return new ArrayContractParameter(
-      this.value.map(val => val.toContractParameter()),
+      this.value.map((val) => val.toContractParameter()),
     );
   }
 
   get size(): number {
     return this.value.length;
+  }
+
+  toString(): string {
+    return JSON.stringify(this.value.map((val) => val.toString()));
   }
 }

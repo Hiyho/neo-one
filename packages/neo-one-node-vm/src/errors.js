@@ -212,8 +212,8 @@ export class InvalidPickItemKeyError extends VMError {
 }
 
 export class InvalidRemoveIndexError extends VMError {
-  constructor(context: ExecutionContext) {
-    super(context, 'Invalid REMOVE Index');
+  constructor(context: ExecutionContext, index: number) {
+    super(context, `Invalid REMOVE Index: ${index}`);
   }
 }
 

@@ -20,6 +20,11 @@
       "yarn run eslint",
       "yarn run test --findRelatedTests --ci --passWithNoTests"
     ],
+    "packages/*/src/**/*.ts": [
+      "prettier --write --config .prettierrc --parser typescript",
+      "git add",
+      "yarn test --findRelatedTests --ci --passWithNoTests"
+    ],
     "packages/*/template/**/*.js": [
       "yarn run prettier --write --config .prettierrc",
       "git add",
@@ -35,7 +40,7 @@
     "flow": "flow",
     "lint-staged": "lint-staged",
     "flow:coverage": "flow-coverage-report -i 'packages/*/src/**/*.js' -t html",
-    "precommit": "lint-staged && flow",
+    "precommit": "lint-staged && flow && tsc && tslint --project .",
     "bootstrap": "yarn run build && lerna bootstrap",
     "build": "rm -rf ./packages/*/dist && yarn run gulp build",
     "watch": "yarn run gulp watch",
@@ -47,6 +52,7 @@
     "test-ci": "jest -w 1",
     "e2e": "jest --config e2e.json",
     "e2e-ci": "jest --config e2e.json -w 1",
+    "tsc": "tsc",
     "nit:source": "prettier --config .prettierrc --list-different \"packages/*/src/**/*.js\"",
     "nit:template": "prettier --config .prettierrc --list-different \"packages/*/template/**/*.js\"",
     "nit:scripts": "prettier --config .prettierrc --list-different \"scripts/**/*.js\"",
@@ -75,7 +81,15 @@
     "@babel/plugin-transform-flow-strip-types": "7.0.0-beta.44",
     "@babel/polyfill": "7.0.0-beta.44",
     "@babel/preset-env": "7.0.0-beta.44",
+    "@babel/preset-typescript": "^7.0.0-beta.44",
     "@babel/register": "7.0.0-beta.44",
+    "@types/core-js": "^0.9.46",
+    "@types/fs-extra": "^5.0.2",
+    "@types/jest": "^22.2.3",
+    "@types/koa": "^2.0.45",
+    "@types/levelup": "^0.0.30",
+    "@types/lodash": "^4.14.107",
+    "@types/node": "^9.6.5",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "8.2.3",
     "babel-jest": "23.0.0-beta.1",
@@ -109,16 +123,20 @@
     "rollup-plugin-sourcemaps": "0.4.2",
     "rxjs-compat": "6.0.0",
     "through2": "2.0.3",
-    "tmp": "0.0.33"
+    "tmp": "0.0.33",
+    "ts-jest": "^22.4.4",
+    "tslint": "^5.9.1",
+    "typescript": "^2.8.1"
   },
   "resolutions": {
     "ajv": "^6.4.0",
+    "babel-core": "7.0.0-bridge.0",
     "bn.js": "^4.11.8",
     "grpc": "^1.10.1"
   },
   "jest": {
     "collectCoverageFrom": [
-      "packages/*/src/**/*.js",
+      "packages/*/src/**/*.(js|ts)",
       "!**/bin/**",
       "!**/__mocks__/**",
       "!**/__tests__/**",
@@ -133,6 +151,36 @@
       "json",
       "lcov"
     ],
+    "globals": {
+      "ts-jest": {
+        "babelConfig": {
+          "presets": [
+            "@babel/preset-typescript",
+            [
+              "@babel/preset-env",
+              {
+                "useBuiltIns": false,
+                "modules": "commonjs"
+              }
+            ]
+          ],
+          "plugins": [
+            "@babel/plugin-proposal-async-generator-functions",
+            "@babel/plugin-proposal-class-properties",
+            "@babel/plugin-proposal-object-rest-spread",
+            "@babel/plugin-proposal-export-namespace-from"
+          ]
+        }
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "/node_modules/",
@@ -141,6 +189,14 @@
       "<rootDir>/migrate/.*",
       "<rootDir>/packages/.*/template/.*",
       "<rootDir>/packages/.*/__e2e__/.*"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "transform": {
+      "^.+\\.jsx?$": "<rootDir>/node_modules/babel-jest",
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!ix)"
     ],
     "snapshotSerializers": [
       "./scripts/serializers/blockchain.js",

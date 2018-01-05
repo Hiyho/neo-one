@@ -102,4 +102,8 @@ export default class MapStackItem extends StackItemBase {
   asMapStackItem(): MapStackItem {
     return this;
   }
+
+  toString(): string {
+    return JSON.stringify(utils.keys(this._keys));
+  }
 }
